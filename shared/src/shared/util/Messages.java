@@ -76,5 +76,6 @@ public enum Messages {
     SPELLS_FULL,
 
     // COMMAND USAGE
-    PLAYERS_ONLINE
+    PLAYERS_ONLINE,
+    COMMAND_ERR
 }
