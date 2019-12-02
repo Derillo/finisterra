@@ -77,5 +77,5 @@ public enum Messages {
 
     // COMMAND USAGE
     PLAYERS_ONLINE,
-    COMMAND_ERR
+    COMMAND_ERROR
 }

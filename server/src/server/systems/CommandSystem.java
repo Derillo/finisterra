@@ -18,8 +18,8 @@ public class CommandSystem extends DefaultManager {
             Example command to get the online players
         
             28/11/2019. [4rl3nk1ng] 
-            -Cambio de if a switch, ya que es mas rapido y entendible.
-            -Change if to switch, is more fast and understandable.
+                -Cambio de if a switch, ya que es mas rapido y entendible.
+                -Change if to switch, is more fast and understandable.
         */
     
         switch(command.toUpperCase()) {
@@ -29,7 +29,7 @@ public class CommandSystem extends DefaultManager {
             break;
             
             default: //si no coincide, es inválido
-                worldManager.sendEntityUpdate(senderId, Messages.COMMAND_ERR); 
+                worldManager.sendEntityUpdate(senderId, Messages.COMMAND_ERROR); 
         }
         
     }
