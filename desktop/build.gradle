@@ -6,7 +6,7 @@ plugins {
 
 sourceSets {
     main.java.srcDirs = ["src/"]
-    main.resources.srcDirs = ["assets/"]
+    main.resources.srcDirs = ["../assets"]
 }
 
 dependencies {
@@ -47,6 +47,9 @@ run.dependsOn(classes)
 // Determine where the bundled application is going to be.
 def releasePath = "${buildDir}/releases"
 
+// Short-named var representing where the Assets are.
+def assetsPath = sourceSets.main.resources.srcDirs.toString()
+
 // creates application bundle (executable + runtime)
 task bundle(type: Exec, dependsOn: [dist, jlink]) {
 
@@ -72,13 +75,13 @@ task bundle(type: Exec, dependsOn: [dist, jlink]) {
 
     if (osName.contains('windows')) {
         commands << "--icon"
-        commands << "${projectDir}/assets/data/icons/ao.ico"
+        commands << assetsPath.concat("/data/icons/ao.ico")
     } else if (osName.contains('linux')) {
         commands << "--icon"
-        commands << "${projectDir}/assets/data/icons/ao.png"
+        commands << assetsPath.concat("/data/icons/ao.png")
     } else if (osName.contains('mac')) {
         commands << "--icon"
-        commands << "${projectDir}/assets/data/icons/ao.icns"
+        commands << assetsPath.concat("/data/icons/ao.icns")
         commands << "--java-options"
         commands << "-XstartOnFirstThread"
     }
@@ -88,7 +91,7 @@ task bundle(type: Exec, dependsOn: [dist, jlink]) {
     doLast() {
 
         copy {
-            from("${projectDir}/assets")
+            from(assetsPath)
             from("${projectDir}/Config.json")
 			
             if (osName.contains('mac')) {
