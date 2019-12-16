@@ -6,8 +6,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -34,14 +38,11 @@ public class GUI extends BaseSystem implements Disposable {
     private UserInformation userTable;
     private DialogText dialog;
     private AOConsole console;
+    private Window menu;
     private OrthographicCamera camera;
 
     public GUI() {
         this.stage = new AOInputProcessor(this);
-        this.actionBar = new ActionBar();
-        this.userTable = new UserInformation();
-        this.dialog = new DialogText();
-        this.console = new AOConsole();
     }
 
     @Override
@@ -140,6 +141,7 @@ public class GUI extends BaseSystem implements Disposable {
         createUserStatus(table);
         createActionBar(table);
         createDialogContainer(table);
+        createMenu();
         stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
     }
@@ -178,6 +180,25 @@ public class GUI extends BaseSystem implements Disposable {
         dialog.setSize(width, dialog.getHeight());
         dialog.setPosition((getWidth() - width) / 2, getHeight() / 2);
         stage.addActor(dialog);
+    }
+
+    private void createMenu() {
+        menu = new Window("Menu", Skins.COMODORE_SKIN);
+        TextButton exitButton = new TextButton("Salir", Skins.COMODORE_SKIN);
+        exitButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                AOGame game = (AOGame) Gdx.app.getApplicationListener();
+                game.toLogin();
+            }
+        });
+        menu.addActor(exitButton);
+        menu.setVisible(false);
+        stage.addActor(menu);
+    }
+
+    public void toggleMenu () {
+        menu.setVisible(!menu.isVisible());
     }
 
     private float getHeight() {

@@ -196,9 +196,7 @@ public class AOInputProcessor extends Stage {
                 gui.getActionBar().toggle();
                 break;
             case Input.Keys.ESCAPE:
-                // Disconnect & go back to LoginScreen
-                AOGame game = (AOGame) Gdx.app.getApplicationListener();
-                game.toLogin();
+                gui.toggleMenu();
                 break;
             case Input.Keys.F2:
                 // Take a screenshot of the render.
@@ -268,9 +266,7 @@ public class AOInputProcessor extends Stage {
                 attack();
                 break;
             case Input.Keys.ESCAPE:
-                // Disconnect & go back to LoginScreen
-                AOGame game = (AOGame) Gdx.app.getApplicationListener();
-                game.toLogin();
+                gui.toggleMenu();
                 break;
             case Input.Keys.F2:
                 // Take a screenshot of the render.
