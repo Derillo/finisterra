@@ -1,3 +1,2 @@
 rootProject.name = 'finisterra'
-include 'desktop', 'design', 'client', 'components', 'shared', 'server'
-
+include 'desktop', 'design', 'client', 'components', 'shared', 'server', 'android'
