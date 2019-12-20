@@ -103,7 +103,7 @@ public class LoginScreen extends AbstractScreen {
         loginWindow.add(loginButton).padTop(20).expandX().row();
         getMainTable().add(loginWindow).width(400).height(300).row();
 
-        serverList = new List<>(getSkin());
+        serverList = new List<>(Skins.DEFAULT_SKIN);
         ScrollPane scrollPane = new ScrollPane(serverList, getSkin());
         scrollPane.setScrollingDisabled(true, false);
         serverList.setItems(config.getNetwork().getServers());

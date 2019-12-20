@@ -183,8 +183,10 @@ public class GUI extends BaseSystem implements Disposable {
     }
 
     private void createMenu() {
-        menu = new Window("Menu", Skins.COMODORE_SKIN);
-        TextButton exitButton = new TextButton("Salir", Skins.COMODORE_SKIN);
+        float menuWidth = 400, menuHeight = 300;
+        menu = new Window("Menu", Skins.DEFAULT_SKIN);
+        menu.setBounds((getWidth() - menuWidth) / 2, (getHeight() - menuHeight) / 2, menuWidth, menuHeight);
+        TextButton exitButton = new TextButton("Salir del juego", Skins.DEFAULT_SKIN);
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
