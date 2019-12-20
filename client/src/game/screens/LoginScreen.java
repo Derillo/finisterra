@@ -15,6 +15,7 @@ import game.handlers.MusicHandler;
 import game.network.ClientResponseProcessor;
 import game.network.GameNotificationProcessor;
 import game.systems.network.ClientSystem;
+import game.utils.Skins;
 import net.mostlyoriginal.api.network.marshal.common.MarshalState;
 import shared.network.lobby.JoinLobbyRequest;
 import shared.util.Messages;
@@ -85,11 +86,6 @@ public class LoginScreen extends AbstractScreen {
         this.username = new TextField("", getSkin());
         username.setMessageText("User Name");
 
-        Table connectionTable = new Table((getSkin()));
-
-        this.serverList = new List<>(getSkin());
-        serverList.setItems(config.getNetwork().getServers());
-
         TextButton loginButton = new TextButton("Connect", getSkin());
         loginButton.addListener(new ClickListener() {
             @Override
@@ -107,10 +103,12 @@ public class LoginScreen extends AbstractScreen {
         loginWindow.add(loginButton).padTop(20).expandX().row();
         getMainTable().add(loginWindow).width(400).height(300).row();
 
-        connectionTable.add(serverList).width(300);
-        connectionTable.align(Align.center);
-        connectionTable.setVisible(true);
-        getMainTable().add(connectionTable);
+        serverList = new List<>(getSkin());
+        ScrollPane scrollPane = new ScrollPane(serverList, getSkin());
+        scrollPane.setScrollingDisabled(true, false);
+        serverList.setItems(config.getNetwork().getServers());
+        getMainTable().add(scrollPane).size(400, 200);
+
         getStage().setKeyboardFocus(username);
     }
 
