@@ -3,8 +3,10 @@ package game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
@@ -104,10 +106,40 @@ public class LoginScreen extends AbstractScreen {
         getMainTable().add(loginWindow).width(400).height(300).row();
 
         serverList = new List<>(Skins.DEFAULT_SKIN);
-        ScrollPane scrollPane = new ScrollPane(serverList, getSkin());
-        scrollPane.setScrollingDisabled(true, false);
         serverList.setItems(config.getNetwork().getServers());
-        getMainTable().add(scrollPane).size(400, 200);
+        ScrollPane scrollPane = new ScrollPane(serverList, Skins.DEFAULT_SKIN);
+        scrollPane.setScrollingDisabled(true, false);
+        getMainTable().add(scrollPane).size(400, 200).row();
+
+        /** @todo revisar -- {@link ScrollPane} no es dinamico, habría que reinicializarlo o algo asi */
+        TextButton addServerButton = new TextButton("Agregar servidor", Skins.DEFAULT_SKIN);
+        addServerButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (((TextButton)actor).isPressed()) {
+                    TextField serverName, serverHostname, serverPort;
+                    serverName = new TextField("", Skins.DEFAULT_SKIN);
+                    serverName.setMessageText("Nombre del servidor");
+                    serverHostname = new TextField("", Skins.DEFAULT_SKIN);
+                    serverHostname.setMessageText("IP del servidor");
+                    serverPort = new TextField("", Skins.DEFAULT_SKIN);
+                    serverPort.setMessageText("Puerto del servidor");
+                    Dialog dialog = new Dialog("Agregar servidor", Skins.DEFAULT_SKIN) {
+                        @Override
+                        protected void result(Object object) {
+                            serverList.getItems().add(new ClientConfiguration.Network.Server(serverName.getText(), serverHostname.getText(), Integer.parseInt(serverPort.getText())));
+                            super.result(object);
+                        }
+                    };
+                    dialog.getContentTable().add(serverName).row();
+                    dialog.getContentTable().add(serverHostname).row();
+                    dialog.getContentTable().add(serverPort);
+                    dialog.button("Agregar");
+                    dialog.show(getStage());
+                }
+            }
+        });
+        getMainTable().add(addServerButton).width(400);
 
         getStage().setKeyboardFocus(username);
     }
