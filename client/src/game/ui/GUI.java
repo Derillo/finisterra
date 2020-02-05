@@ -6,11 +6,14 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.Disposable;
@@ -184,18 +187,35 @@ public class GUI extends BaseSystem implements Disposable {
 
     private void createMenu() {
         float menuWidth = 400, menuHeight = 300;
+
         menu = new Window("Menu", Skins.DEFAULT_SKIN);
         menu.setBounds((getWidth() - menuWidth) / 2, (getHeight() - menuHeight) / 2, menuWidth, menuHeight);
-        TextButton exitButton = new TextButton("Salir del juego", Skins.DEFAULT_SKIN);
-        exitButton.addListener(new ClickListener() {
+
+        CheckBox consoleCheckBox = new CheckBox("Ver consola", Skins.DEFAULT_SKIN);
+        consoleCheckBox.setChecked(console.isVisible());
+        consoleCheckBox.addListener(new ChangeListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
-                AOGame game = (AOGame) Gdx.app.getApplicationListener();
-                game.toLogin();
+            public void changed(ChangeEvent event, Actor actor) {
+                console.setVisible(((CheckBox)actor).isChecked());
             }
         });
-        menu.addActor(exitButton);
+
+        TextButton exitButton = new TextButton("Salir del juego", Skins.DEFAULT_SKIN);
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (((TextButton)actor).isPressed()) {
+                    AOGame game = (AOGame) Gdx.app.getApplicationListener();
+                    game.toLogin();
+                }
+            }
+        });
+
+        menu.add(consoleCheckBox);
+        menu.row();
+        menu.add(exitButton);
         menu.setVisible(false);
+
         stage.addActor(menu);
     }
 
