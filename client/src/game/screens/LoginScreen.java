@@ -4,11 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
 import game.AOGame;
 import game.ClientConfiguration;
@@ -19,7 +16,7 @@ import game.network.GameNotificationProcessor;
 import game.systems.network.ClientSystem;
 import game.utils.Skins;
 import net.mostlyoriginal.api.network.marshal.common.MarshalState;
-import shared.network.lobby.JoinLobbyRequest;
+import shared.network.account.AccountLoginRequest;
 import shared.util.Messages;
 
 import static game.utils.Resources.CLIENT_CONFIG;
@@ -27,9 +24,10 @@ import static game.utils.Resources.CLIENT_CONFIG;
 public class LoginScreen extends AbstractScreen {
 
     private ClientSystem clientSystem;
-    private ClientConfiguration config;
 
-    private TextField username;
+    private TextField email;
+    private TextField password;
+    private CheckBox rememberMe;
     private List<ClientConfiguration.Network.Server> serverList;
 
     private boolean canConnect = true;
@@ -63,11 +61,8 @@ public class LoginScreen extends AbstractScreen {
     @Override
     protected void keyPressed(int keyCode) {
         if (keyCode == Input.Keys.ENTER && this.canConnect) {
-            //Connect
-            connectThenLogin();
-
-            //Prevent multiple simultaneous connections.
             this.canConnect = false;
+            connectThenLogin();
         }
     }
 
@@ -81,37 +76,58 @@ public class LoginScreen extends AbstractScreen {
 
     @Override
     void createContent() {
-        config = ClientConfiguration.loadConfig(CLIENT_CONFIG); // @todo hotfix
+        ClientConfiguration config = ClientConfiguration.loadConfig(CLIENT_CONFIG); //@todo esto es un hotfix, el config tendría que cargarse en otro lado
 
-        Window loginWindow = new Window("", getSkin());
-        Label userLabel = new Label("User", getSkin());
-        this.username = new TextField("", getSkin());
-        username.setMessageText("User Name");
+        /* Tabla de login */
+        Window loginWindow = new Window("", getSkin()); //@todo window es una ventana arrastrable
+        Label emailLabel = new Label("Email:", getSkin());
+        this.email = new TextField("", getSkin());
+        Label passwordLabel = new Label("Password:", getSkin());
+        this.password = new TextField("", getSkin());
+        this.password.setPasswordCharacter('*');
+        this.password.setPasswordMode(true);
+        this.rememberMe = new CheckBox("Remember me", getSkin());
 
-        TextButton loginButton = new TextButton("Connect", getSkin());
-        loginButton.addListener(new ClickListener() {
+        TextButton loginButton = new TextButton("Login", getSkin());
+        loginButton.addListener(new ChangeListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
-                connectThenLogin();
+            public void changed(ChangeEvent event, Actor actor) {
+                if (((TextButton)actor).isPressed()) {
+                    connectThenLogin();
+                }
             }
+        });
 
+        TextButton newAccountButton = new TextButton("New account", getSkin());
+        newAccountButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (((TextButton)actor).isPressed()) {
+                    AOGame game = (AOGame) Gdx.app.getApplicationListener();
+                    game.toSignUp(clientSystem);
+                }
+            }
         });
 
         loginWindow.getColor().a = 0.8f;
-        loginWindow.add(userLabel);
-        loginWindow.row();
-        loginWindow.add(username).width(200);
-        loginWindow.row();
-        loginWindow.add(loginButton).padTop(20).expandX().row();
-        getMainTable().add(loginWindow).width(400).height(300).row();
+        loginWindow.add(emailLabel).padRight(5);
+        loginWindow.add(this.email).width(250).row();
+        loginWindow.add(passwordLabel).padTop(5).padRight(5);
+        loginWindow.add(this.password).padTop(5).width(250).row();
+        loginWindow.add(this.rememberMe).padTop(20);
+        loginWindow.add(loginButton).padTop(20).row();
+        loginWindow.add();
+        loginWindow.add(newAccountButton).padTop(30).row();
 
-        serverList = new List<>(Skins.DEFAULT_SKIN);
+        /* Tabla de servidores */
+        Table connectionTable = new Table((getSkin()));
+        this.serverList = new List<>(getSkin());
         serverList.setItems(config.getNetwork().getServers());
         ScrollPane scrollPane = new ScrollPane(serverList, Skins.DEFAULT_SKIN);
         scrollPane.setScrollingDisabled(true, false);
-        getMainTable().add(scrollPane).size(400, 200).row();
+        connectionTable.add(scrollPane).size(400, 200).row(); //@todo Nota: setear el size acá es redundante, pero si no se hace no se ve bien la lista. Ver (*) más abajo.
 
-        /** @todo revisar -- {@link ScrollPane} no es dinamico, habría que reinicializarlo o algo asi */
+        // @todo ScrollPane no soporta contenido dinámico, habría que reinicializarlo cada vez o algo así.
         TextButton addServerButton = new TextButton("Agregar servidor", Skins.DEFAULT_SKIN);
         addServerButton.addListener(new ChangeListener() {
             @Override
@@ -139,42 +155,59 @@ public class LoginScreen extends AbstractScreen {
                 }
             }
         });
-        getMainTable().add(addServerButton).width(400);
+        connectionTable.add(addServerButton);
 
-        getStage().setKeyboardFocus(username);
+        /* Tabla principal */
+        getMainTable().add(loginWindow).size(500, 300).pad(10);
+        getMainTable().add(connectionTable).size(400, 300).pad(10); //(*) Seteando acá el size, recursivamente tendría que resizear list.
+        getStage().setKeyboardFocus(this.email);
     }
 
     private void connectThenLogin() {
 
         if (this.canConnect) {
-            String user = username.getText();
+
+            String email = this.email.getText();
+            String password = this.password.getText();
 
             ClientConfiguration.Network.Server server = serverList.getSelected();
-            if (server == null)
-                return;
+            if (server == null) return;
             String ip = server.getHostname();
             int port = server.getPort();
 
+            //@todo encapsular todo este chequeo en el cliente
             if (clientSystem.getState() != MarshalState.STARTING && clientSystem.getState() != MarshalState.STOPPING) {
-                if (clientSystem.getState() != MarshalState.STOPPED)
+
+                if (clientSystem.getState() != MarshalState.STOPPED) {
                     clientSystem.stop();
+                }
+
+                // Si no estamos tratando de conectarnos al servidor, intentamos conectarnos.
                 if (clientSystem.getState() == MarshalState.STOPPED) {
 
+                    // Seteamos la info. del servidor al que nos vamos a conectar.
                     clientSystem.getKryonetClient().setHost(ip);
                     clientSystem.getKryonetClient().setPort(port);
 
+                    // Inicializamos la conexion.
                     clientSystem.start();
+
+                    // Si pudimos conectarnos, mandamos la peticion para loguearnos a la cuenta.
                     if (clientSystem.getState() == MarshalState.STARTED) {
-                        clientSystem.getKryonetClient().sendToAll(new JoinLobbyRequest(user));
-                        this.canConnect = false;
+
+                        // Enviamos la peticion de inicio de sesion.
+                        clientSystem.getKryonetClient().sendToAll(new AccountLoginRequest(email, password));
+
                     } else if (clientSystem.getState() == MarshalState.FAILED_TO_START) {
+                        this.canConnect = true;
+
                         AOAssetManager assetManager = AOGame.getGlobalAssetManager();
 
+                        // Mostramos un mensaje de error.
                         Dialog dialog = new Dialog(assetManager.getMessages(Messages.FAILED_TO_CONNECT_TITLE), getSkin());
                         dialog.text(assetManager.getMessages(Messages.FAILED_TO_CONNECT_DESCRIPTION));
                         dialog.button("OK");
                         dialog.show(getStage());
-                        this.canConnect = true;
                     }
                 }
             }
