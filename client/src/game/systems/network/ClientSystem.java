@@ -4,6 +4,7 @@ import com.artemis.annotations.Wire;
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.minlog.Log;
 import game.AOGame;
+import game.ClientConfiguration;
 import game.network.ClientResponseProcessor;
 import game.network.GameNotificationProcessor;
 import game.network.KryonetClientMarshalStrategy;
@@ -18,6 +19,10 @@ public class ClientSystem extends MarshalSystem {
 
     private ClientResponseProcessor responseProcessor;
     private GameNotificationProcessor notificationProcessor;
+
+    public ClientSystem() {
+        super(new NetworkDictionary(), new KryonetClientMarshalStrategy());
+    }
 
     public ClientSystem(String host, int port) {
         super(new NetworkDictionary(), new KryonetClientMarshalStrategy(host, port));

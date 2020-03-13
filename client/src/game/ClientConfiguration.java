@@ -15,9 +15,9 @@ import java.io.FileInputStream;
  */
 public class ClientConfiguration extends PassiveSystem {
 
-    private Init initConfig;
-    private Account account;
-    private Network network;
+    public Init initConfig;
+    public Account account;
+    public Network network;
 
     public static ClientConfiguration loadConfig(String path) {
         Json configObject = new AOJson();

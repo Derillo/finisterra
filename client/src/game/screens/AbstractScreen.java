@@ -8,17 +8,36 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import game.AOGame;
+import game.ClientConfiguration;
+import game.handlers.AOAssetManager;
+import game.systems.network.ClientSystem;
 import game.utils.Resources;
 import game.utils.Skins;
+
+import javax.annotation.Nonnull;
 
 public abstract class AbstractScreen extends ScreenAdapter {
     private static final Skin SKIN = Skins.COMODORE_SKIN;
     private static final Texture BACKGROUND_TEXTURE = new Texture(Gdx.files.internal(Resources.GAME_IMAGES_PATH + "background.jpg"));
     private static final SpriteDrawable BACKGROUND = new SpriteDrawable(new Sprite(BACKGROUND_TEXTURE));
-    private final Stage stage;
-    private Table mainTable;
 
-    public AbstractScreen() {
+    //dependencies
+    protected final AOGame game;
+    protected final AOAssetManager assetManager;
+    protected final ClientConfiguration config;
+    protected final ClientSystem clientSystem;
+
+    //scene2d ui
+    protected final Stage stage;
+    protected final Table mainTable;
+
+    public AbstractScreen(@Nonnull AOGame game) {
+        this.game = game;
+        assetManager = game.getAssetManager();
+        config = game.getClientConfiguration();
+        clientSystem = game.getClientSystem();
+
         stage = new Stage() {
             @Override
             public boolean keyUp(int keyCode) {
@@ -26,10 +45,24 @@ public abstract class AbstractScreen extends ScreenAdapter {
                 return super.keyUp(keyCode);
             }
         };
+        mainTable = new Table(SKIN);
+        mainTable.setFillParent(true);
+        mainTable.setBackground(BACKGROUND);
+        stage.addActor(mainTable);
+
         createUI();
     }
 
-    protected abstract void keyPressed(int keyCode);
+    private void createUI() {
+        createContent();
+        //getStage().addActor(getMainTable());
+    }
+
+    abstract void createContent();
+
+    protected void keyPressed(int keyCode) {
+        //override me
+    }
 
     public Stage getStage() {
         return stage;
@@ -54,20 +87,10 @@ public abstract class AbstractScreen extends ScreenAdapter {
         getStage().draw();
     }
 
-    private void createUI() {
-        mainTable = new Table(Skins.COMODORE_SKIN);
-        mainTable.setFillParent(true);
-        mainTable.setBackground(BACKGROUND);
-        createContent();
-        getStage().addActor(getMainTable());
-    }
-
     @Override
     public void resize(int width, int height) {
         getStage().getViewport().update(width, height);
     }
-
-    abstract void createContent();
 
     @Override
     public void dispose() {

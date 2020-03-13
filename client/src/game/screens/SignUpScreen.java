@@ -8,31 +8,23 @@ import com.badlogic.gdx.utils.Timer;
 import game.AOGame;
 import game.ClientConfiguration;
 import game.handlers.AOAssetManager;
-import game.systems.network.ClientSystem;
 import net.mostlyoriginal.api.network.marshal.common.MarshalState;
 import shared.network.account.AccountCreationRequest;
 import shared.util.Messages;
 
-import static game.utils.Resources.CLIENT_CONFIG;
-
 public class SignUpScreen extends AbstractScreen {
-
-    private ClientSystem clientSystem;
-
     private TextField usernameField;
     private TextField passwordField1, passwordField2;
     private TextField emailField;
     private TextButton registerButton;
     private List<ClientConfiguration.Network.Server> serverList;
 
-    public SignUpScreen(ClientSystem clientSystem) {
-        this.clientSystem = clientSystem;
+    public SignUpScreen(AOGame game) {
+        super(null);
     }
 
     @Override
     void createContent() {
-        ClientConfiguration config = ClientConfiguration.loadConfig(CLIENT_CONFIG); //@todo esto es un hotfix, el config tendría que cargarse en otro lado
-
         /* Tabla de sign up */
         Window signUpTable = new Window("", getSkin()); //@todo window es una ventana arrastrable
         Label usernameLabel = new Label("Username:", getSkin());
@@ -75,7 +67,7 @@ public class SignUpScreen extends AbstractScreen {
         /* Tabla principal */
         getMainTable().add(goBackButton).row();
         getMainTable().add(signUpTable).width(500).height(300).pad(10);
-        getMainTable().add(serverTable).width(400).height(300).pad(10);
+        getMainTable().add(serverTable).width(400).height(300).pad(10); // (*)
         getStage().setKeyboardFocus(usernameField);
     }
 
@@ -159,9 +151,5 @@ public class SignUpScreen extends AbstractScreen {
                 game.toLogin();
             }
         }
-    }
-
-    @Override
-    protected void keyPressed(int keyCode) {
     }
 }

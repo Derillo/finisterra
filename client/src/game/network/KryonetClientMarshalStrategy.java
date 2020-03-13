@@ -13,20 +13,30 @@ public class KryonetClientMarshalStrategy extends KryonetMarshalStrategy {
     private String host;
     private int port;
 
-    public KryonetClientMarshalStrategy(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public KryonetClientMarshalStrategy() {
         endpoint = new Client(8192, 8192);
     }
 
+    public KryonetClientMarshalStrategy(String host, int port) {
+        this();
+        this.host = host;
+        this.port = port;
+    }
+
     public void setHost(String host) {
-        if (state == MarshalState.STOPPED)
+        if (state == MarshalState.STOPPED) {
             this.host = host;
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     public void setPort(int port) {
-        if (state == MarshalState.STOPPED)
+        if (state == MarshalState.STOPPED) {
             this.port = port;
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     @Override

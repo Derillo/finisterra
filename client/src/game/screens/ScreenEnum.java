@@ -1,45 +1,44 @@
 package game.screens;
 
 import com.badlogic.gdx.Screen;
+import game.AOGame;
 import game.ClientConfiguration;
 import game.handlers.AOAssetManager;
-import game.systems.network.ClientSystem;
 import shared.model.lobby.Player;
 import shared.model.lobby.Room;
 
+//@todo
+//@fixme
+//Necesita referencia a AOGame
 public enum ScreenEnum {
     LOADING {
         @Override
         public Screen getScreen(Object... params) {
-            return new LoadingScreen();
+            return new LoadingScreen(game);
         }
     },
     LOGIN {
         @Override
         public Screen getScreen(Object... params) {
-            return new LoginScreen();
+            return new LoginScreen(game);
         }
     },
     SIGNUP {
         @Override
         public Screen getScreen(Object... params) {
-            ClientSystem clientSystem = (ClientSystem) params[0];
-            return new SignUpScreen(clientSystem);
+            return new SignUpScreen(game);
         }
     },
     LOBBY {
         @Override
         public Screen getScreen(Object... params) {
-            Player player = (Player) params[0];
-            Room[] rooms = (Room[]) params[1];
-            ClientSystem clientSystem = (ClientSystem) params[2];
-            return new LobbyScreen(clientSystem, player, rooms);
+            return new LobbyScreen(game, (Player) params[0], (Room[]) params[1]);
         }
     },
     ROOM {
         @Override
         public Screen getScreen(Object... params) {
-            return new RoomScreen((ClientSystem) params[0], (Room) params[1], (Player) params[2]);
+            return new RoomScreen(game, (Room) params[1], (Player) params[2]);
         }
     },
     GAME {
@@ -49,6 +48,11 @@ public enum ScreenEnum {
         }
     };
 
+    protected final AOGame game;
+
+    ScreenEnum(AOGame game) {
+        this.game = game;
+    }
 
     public abstract Screen getScreen(Object... params);
 }

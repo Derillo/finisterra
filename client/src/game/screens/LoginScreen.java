@@ -10,8 +10,6 @@ import game.AOGame;
 import game.ClientConfiguration;
 import game.handlers.AOAssetManager;
 import game.handlers.MusicHandler;
-import game.network.ClientResponseProcessor;
-import game.network.GameNotificationProcessor;
 import game.systems.network.ClientSystem;
 import net.mostlyoriginal.api.network.marshal.common.MarshalState;
 import shared.network.account.AccountLoginRequest;
@@ -20,24 +18,19 @@ import shared.util.Messages;
 import static game.utils.Resources.CLIENT_CONFIG;
 
 public class LoginScreen extends AbstractScreen {
-
-    private ClientSystem clientSystem;
-
     private TextField emailField;
     private TextField passwordField;
-    private CheckBox rememberMe; //@todo implementar remember me
+    private CheckBox rememberMe;
     private CheckBox seePassword;
     private TextButton loginButton;
     private List<ClientConfiguration.Network.Server> serverList;
 
-    public LoginScreen() {
-        super();
-        init();
-        // utilice bgmusic  para subir gradualmente el sonido.
-        bGMusic ();
+    public LoginScreen(AOGame game) {
+        super(game);
+        bGMusic();
     }
 
-    void bGMusic() {
+    void bGMusic() { // TODO MusicHandler.playMusic(101);
         Music firstBGMusic = MusicHandler.FIRSTBGM;
         firstBGMusic.setVolume ( 0 );
         firstBGMusic.play ( );
@@ -57,34 +50,13 @@ public class LoginScreen extends AbstractScreen {
     }
 
     @Override
-    protected void keyPressed(int keyCode) {
-        /*
-        if (keyCode == Input.Keys.ENTER && this.canConnect) {
-            this.canConnect = false;
-            connectThenLogin();
-        }
-        */
-    }
-
-    private void init() {
-        clientSystem = new ClientSystem("127.0.0.1", 7666); // @todo implement empty constructor
-        clientSystem.setNotificationProcessor(new GameNotificationProcessor());
-        clientSystem.setResponseProcessor(new ClientResponseProcessor());
-
-        // TODO MusicHandler.playMusic(101);
-    }
-
-    @Override
     void createContent() {
-        ClientConfiguration config = ClientConfiguration.loadConfig(CLIENT_CONFIG); //@todo esto es un hotfix, el config tendría que cargarse en otro lado
-        ClientConfiguration.Account account = config.getAccount();
-
         /* Tabla de login */
         Window loginWindow = new Window("", getSkin()); //@todo window es una ventana arrastrable
         Label emailLabel = new Label("Email:", getSkin());
-        emailField = new TextField(account.getEmail(), getSkin());
+        emailField = new TextField(config.account.getEmail(), getSkin());
         Label passwordLabel = new Label("Password:", getSkin());
-        passwordField = new TextField(account.getPassword(), getSkin());
+        passwordField = new TextField(config.account.getPassword(), getSkin());
         passwordField.setPasswordCharacter('*');
         passwordField.setPasswordMode(true);
         rememberMe = new CheckBox("Remember me", getSkin());
@@ -129,9 +101,9 @@ public class LoginScreen extends AbstractScreen {
         connectionTable.add(serverList).width(400).height(300); //@todo Nota: setear el size acá es redundante, pero si no se hace no se ve bien la lista. Ver (*) más abajo.
 
         /* Tabla principal */
-        getMainTable().add(loginWindow).width(500).height(300).pad(10);
-        getMainTable().add(connectionTable).width(400).height(300).pad(10); //(*) Seteando acá el size, recursivamente tendría que resizear list.
-        getStage().setKeyboardFocus(emailField);
+        mainTable.add(loginWindow).width(500).height(300).pad(10);
+        mainTable.add(connectionTable).width(400).height(300).pad(10); //(*) Seteando acá el size, recursivamente tendría que resizear list.
+        stage.setKeyboardFocus(emailField);
     }
 
     private class LoginButtonListener extends ChangeListener {
@@ -150,9 +122,8 @@ public class LoginScreen extends AbstractScreen {
                 String email = emailField.getText();
                 String password = passwordField.getText();
 
-                ClientConfiguration config = ClientConfiguration.loadConfig(CLIENT_CONFIG); //@todo esto es un hotfix, el config tendría que cargarse en otro lado
-                config.getAccount().setEmail(email);
-                config.getAccount().setPassword(password);
+                config.account.setEmail(email);
+                config.account.setPassword(password);
                 config.save(CLIENT_CONFIG);
 
                 ClientConfiguration.Network.Server server = serverList.getSelected();

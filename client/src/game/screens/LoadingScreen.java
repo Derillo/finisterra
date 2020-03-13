@@ -8,32 +8,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import game.AOGame;
-import game.handlers.AOAssetManager;
 import game.utils.Resources;
 
 import static com.badlogic.gdx.scenes.scene2d.ui.ProgressBar.ProgressBarStyle;
 
 public class LoadingScreen extends AbstractScreen {
-
-    private AOAssetManager assetManager;
     private Texture progressBar;
     private Texture progressBarKnob;
     private ProgressBar progress;
     private boolean loaded;
     private boolean textureLoading;
 
-    public LoadingScreen() {
-    }
-
-    @Override
-    protected void keyPressed(int keyCode) {
-
+    public LoadingScreen(AOGame game) {
+        super(game);
     }
 
     @Override
     void createContent() {
-        assetManager = AOGame.getGlobalAssetManager();
-
         String progressBarPath = Resources.GAME_IMAGES_PATH + "progress-bar.png";
         String progressBarKnobPath = Resources.GAME_IMAGES_PATH + "progress-bar-knob.png";
         assetManager.getAssetManager().load(progressBarPath, Texture.class);

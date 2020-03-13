@@ -21,15 +21,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LobbyScreen extends AbstractScreen {
-
     private final Player player;
-    private final ClientSystem clientSystem;
     private final Set<Room> rooms;
     private List<Room> roomList;
 
-    public LobbyScreen(ClientSystem clientSystem, Player player, Room[] rooms) {
-        super();
-        this.clientSystem = clientSystem;
+    public LobbyScreen(AOGame game, Player player, Room[] rooms) {
+        super(game);
         this.player = player;
         this.rooms = Arrays.stream(rooms).collect(Collectors.toSet());
         updateRooms();
@@ -52,11 +49,6 @@ public class LobbyScreen extends AbstractScreen {
         dialog.text(assetManager.getMessages(Messages.MAX_ROOM_LIMIT_CREATION_DESCRIPTION));
         dialog.button("OK");
         dialog.show(getStage());
-    }
-
-    @Override
-    protected void keyPressed(int keyCode) {
-
     }
 
     @Override

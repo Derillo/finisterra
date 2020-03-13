@@ -1,6 +1,5 @@
 package game.screens;
 
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -10,7 +9,6 @@ import com.badlogic.gdx.utils.Array;
 import game.AOGame;
 import game.handlers.AOAssetManager;
 import game.handlers.MusicHandler;
-import game.systems.network.ClientSystem;
 import shared.interfaces.Hero;
 import shared.model.lobby.Player;
 import shared.model.lobby.Room;
@@ -22,7 +20,6 @@ import shared.network.lobby.player.ChangeTeamRequest;
 import shared.util.Messages;
 
 public class RoomScreen extends AbstractScreen {
-    private final ClientSystem clientSystem;
     private final Room room;
     private final Player me;
     private List<Player> criminalList;
@@ -31,9 +28,8 @@ public class RoomScreen extends AbstractScreen {
     private SelectBox<Hero> heroSelect;
     private LoginScreen loginScreen;
 
-    public RoomScreen(ClientSystem clientSystem, Room room, Player me) {
-        super();
-        this.clientSystem = clientSystem;
+    public RoomScreen(AOGame game, Room room, Player me) {
+        super(game);
         this.room = room;
         this.me = me;
         selectRandomHero();
@@ -52,10 +48,6 @@ public class RoomScreen extends AbstractScreen {
 
     public Room getRoom() {
         return room;
-    }
-
-    @Override
-    protected void keyPressed(int keyCode) {
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import com.esotericsoftware.minlog.Log;
+import game.systems.network.ClientSystem;
 import shared.util.LogSystem;
 import game.handlers.AOAssetManager;
 import game.handlers.DefaultAOAssetManager;
@@ -28,10 +29,12 @@ public class AOGame extends FadingGame implements AssetManagerHolder {
 
     private final AOAssetManager assetManager;
     private final ClientConfiguration clientConfiguration;
+    private final ClientSystem clientSystem;
 
     public AOGame(ClientConfiguration clientConfiguration) {
         this.clientConfiguration = clientConfiguration;
-        this.assetManager = new DefaultAOAssetManager(clientConfiguration);
+        assetManager = new DefaultAOAssetManager(clientConfiguration);
+        clientSystem = new ClientSystem();
     }
 
     public static AOAssetManager getGlobalAssetManager() {
@@ -83,6 +86,10 @@ public class AOGame extends FadingGame implements AssetManagerHolder {
     @Override
     public AOAssetManager getAssetManager() {
         return assetManager;
+    }
+
+    public ClientSystem getClientSystem() {
+        return clientSystem;
     }
 
     @Override
