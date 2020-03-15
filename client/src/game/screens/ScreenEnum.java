@@ -7,10 +7,8 @@ import game.handlers.AOAssetManager;
 import shared.model.lobby.Player;
 import shared.model.lobby.Room;
 
-//@todo
-//@fixme
-//Necesita referencia a AOGame
-public enum ScreenEnum {
+public enum ScreenEnum { //@todo revisar
+    /*
     LOADING {
         @Override
         public Screen getScreen(Object... params) {
@@ -55,4 +53,5 @@ public enum ScreenEnum {
     }
 
     public abstract Screen getScreen(Object... params);
+    */
 }

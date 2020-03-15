@@ -43,8 +43,6 @@ public class LobbyScreen extends AbstractScreen {
     }
 
     public void roomMaxLimit() {
-        AOAssetManager assetManager = AOGame.getGlobalAssetManager();
-
         Dialog dialog = new Dialog(assetManager.getMessages(Messages.MAX_ROOM_LIMIT_CREATION_TITLE), getSkin());
         dialog.text(assetManager.getMessages(Messages.MAX_ROOM_LIMIT_CREATION_DESCRIPTION));
         dialog.button("OK");
@@ -90,9 +88,4 @@ public class LobbyScreen extends AbstractScreen {
     private void updateRooms() {
         roomList.setItems(new Array<>(rooms.toArray()));
     }
-
-    public ClientSystem getClientSystem() {
-        return clientSystem;
-    }
-
 }

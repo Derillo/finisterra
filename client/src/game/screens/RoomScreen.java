@@ -26,7 +26,6 @@ public class RoomScreen extends AbstractScreen {
     private List<Player> armyList;
     private TextButton start;
     private SelectBox<Hero> heroSelect;
-    private LoginScreen loginScreen;
 
     public RoomScreen(AOGame game, Room room, Player me) {
         super(game);
@@ -53,8 +52,6 @@ public class RoomScreen extends AbstractScreen {
     @Override
     void createContent() {
         // Load translations.
-        AOAssetManager assetManager = AOGame.getGlobalAssetManager();
-
         Window table = new Window("", getSkin());
         table.setColor(1, 1, 1, 0.8f);
         Table teams = new Table(getSkin());

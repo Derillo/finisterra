@@ -51,7 +51,6 @@ import static com.artemis.E.E;
 import static com.artemis.WorldConfigurationBuilder.Priority.HIGH;
 
 public class GameScreen extends ScreenAdapter implements WorldScreen {
-
     private static final int HANDLER_PRIORITY = WorldConfigurationBuilder.Priority.NORMAL + 3;
     private static final int ENTITY_RENDER_PRIORITY = WorldConfigurationBuilder.Priority.NORMAL + 2;
     private static final int PRE_ENTITY_RENDER_PRIORITY = ENTITY_RENDER_PRIORITY + 1;
@@ -61,24 +60,26 @@ public class GameScreen extends ScreenAdapter implements WorldScreen {
 
     public static World world;
     public static int player = -1;
+
     private final ClientConfiguration clientConfiguration;
     private final FPSLogger logger;
     private final Label fpsLabel;
     private final Batch spriteBatch;
     private final AOAssetManager assetManager;
+
     private final Music backgroundMusic = MusicHandler.BACKGROUNDMUSIC;
     private WorldConfigurationBuilder worldConfigBuilder;
 
-    public GameScreen(ClientConfiguration clientConfiguration, AOAssetManager assetManager) {
-
-        this.clientConfiguration = clientConfiguration;
-        this.assetManager = assetManager;
+    public GameScreen(AOGame game) {
+        this.clientConfiguration = game.getClientConfiguration();
+        this.assetManager = game.getAssetManager();
         this.spriteBatch = initBatch();
         this.logger = new FPSLogger();
         this.fpsLabel = new Label("", Skins.COMODORE_SKIN);
         long start = System.currentTimeMillis();
         initWorldConfiguration();
         Log.info("Game screen initialization", "Elapsed time: " + TimeUnit.MILLISECONDS.toSeconds(Math.abs(System.currentTimeMillis() - start)));
+        initWorld(game.getClientSystem()); //@todo traje esto desde ClientResponseProcessor.process(StartGameResponse)
     }
 
     public static int getPlayer() {

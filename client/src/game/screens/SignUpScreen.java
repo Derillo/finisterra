@@ -128,8 +128,6 @@ public class SignUpScreen extends AbstractScreen {
                             clientSystem.getKryonetClient().sendToAll(new AccountCreationRequest(username, email, password1));
 
                         } else if (clientSystem.getState() == MarshalState.FAILED_TO_START) {
-                            AOAssetManager assetManager = AOGame.getGlobalAssetManager();
-
                             // Mostramos un mensaje de error.
                             Dialog dialog = new Dialog(assetManager.getMessages(Messages.FAILED_TO_CONNECT_TITLE), getSkin());
                             dialog.text(assetManager.getMessages(Messages.FAILED_TO_CONNECT_DESCRIPTION));
@@ -147,7 +145,6 @@ public class SignUpScreen extends AbstractScreen {
         @Override
         public void changed(ChangeEvent event, Actor actor) {
             if (((TextButton)actor).isPressed()) {
-                AOGame game = (AOGame) Gdx.app.getApplicationListener();
                 game.toLogin();
             }
         }

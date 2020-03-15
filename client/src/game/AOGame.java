@@ -5,14 +5,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import com.esotericsoftware.minlog.Log;
-import game.systems.network.ClientSystem;
 import game.handlers.AOAssetManager;
 import game.handlers.DefaultAOAssetManager;
-import game.screens.GameScreen;
-import game.screens.ScreenEnum;
 import game.screens.ScreenManager;
+import game.screens.GameScreen;
+import game.screens.ScreenManager.*;
 import game.screens.transitions.ColorFadeTransition;
 import game.screens.transitions.FadingGame;
+import game.systems.network.ClientSystem;
 import game.utils.Cursors;
 import shared.util.LogSystem;
 
@@ -21,20 +21,24 @@ import shared.util.LogSystem;
  * Implements {@link ApplicationListener}.
  * <p>
  * This should be the primary instance of the app.
+ * </p>
  */
 public class AOGame extends FadingGame implements AssetManagerHolder {
-
     public static final float GAME_SCREEN_ZOOM = 1f;
     public static final float GAME_SCREEN_MAX_ZOOM = 1.3f;
 
-    private final AOAssetManager assetManager;
     private final ClientConfiguration clientConfiguration;
+
+    private final AOAssetManager assetManager;
     private final ClientSystem clientSystem;
+
+    private final ScreenManager screenManager;
 
     public AOGame(ClientConfiguration clientConfiguration) {
         this.clientConfiguration = clientConfiguration;
         assetManager = new DefaultAOAssetManager(clientConfiguration);
         clientSystem = new ClientSystem();
+        screenManager = new ScreenManager(this);
     }
 
     public static AOAssetManager getGlobalAssetManager() {
@@ -49,34 +53,33 @@ public class AOGame extends FadingGame implements AssetManagerHolder {
         Log.info("AOGame", "Creating AOGame...");
         setTransition(new ColorFadeTransition(Color.BLACK, Interpolation.exp10), 1.0f);
         Cursors.setCursor("hand");
-        ScreenManager.getInstance().initialize(this);
         toLoading();
         // @todo load platform-independent configuration (network, etc.)
     }
 
     private void toLoading() {
-        ScreenManager.getInstance().showScreen(ScreenEnum.LOADING);
+        screenManager.show(Screen.LOADING);
     }
 
     public void toLogin() {
-        ScreenManager.getInstance().showScreen(ScreenEnum.LOGIN);
+        screenManager.show(Screen.LOGIN);
     }
 
-    public void toSignUp(Object... params) {
-        ScreenManager.getInstance().showScreen(ScreenEnum.SIGNUP, params);
+    public void toSignUp() {
+        screenManager.show(Screen.SIGNUP);
     }
 
     public void toLobby(Object... params) {
-        ScreenManager.getInstance().showScreen(ScreenEnum.LOBBY, params);
+        screenManager.show(Screen.LOBBY, params);
     }
 
     public void toRoom(Object... params) {
-        ScreenManager.getInstance().showScreen(ScreenEnum.ROOM, params);
+        screenManager.show(Screen.ROOM, params);
     }
 
-    public void toGame(GameScreen gameScreen) {
+    public void toGame() {
         setTransition(new ColorFadeTransition(Color.BLACK, Interpolation.exp10), 0f);
-        setScreen(gameScreen);
+        setScreen(new GameScreen(this));
     }
 
     public ClientConfiguration getClientConfiguration() {
@@ -95,10 +98,12 @@ public class AOGame extends FadingGame implements AssetManagerHolder {
     @Override
     public void dispose() {
         Log.info("AOGame", "Closing client...");
+        //screenManager.dispose();
         screen.dispose();
-        getAssetManager().dispose();
-        Gdx.app.exit();
+        //client.dispose();
+        assetManager.dispose();
+        //Gdx.app.exit();
         Log.info("Thank you for playing! See you soon...");
-        System.exit(0);
+        //System.exit(0);
     }
 }

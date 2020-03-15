@@ -1,6 +1,5 @@
 package game.screens;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -8,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Timer;
 import game.AOGame;
 import game.ClientConfiguration;
-import game.handlers.AOAssetManager;
 import game.handlers.MusicHandler;
 import game.systems.network.ClientSystem;
 import net.mostlyoriginal.api.network.marshal.common.MarshalState;
@@ -79,8 +77,7 @@ public class LoginScreen extends AbstractScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (((TextButton)actor).isPressed()) {
-                    AOGame game = (AOGame) Gdx.app.getApplicationListener();
-                    game.toSignUp(clientSystem);
+                    game.toSignUp();
                 }
             }
         });
@@ -156,17 +153,15 @@ public class LoginScreen extends AbstractScreen {
                             clientSystem.getKryonetClient().sendToAll(new AccountLoginRequest(email, password));
 
                         } else if (clientSystem.getState() == MarshalState.FAILED_TO_START) {
-                            AOAssetManager assetManager = AOGame.getGlobalAssetManager();
-
                             // Mostramos un mensaje de error.
                             Dialog dialog = new Dialog(assetManager.getMessages(Messages.FAILED_TO_CONNECT_TITLE), getSkin());
                             dialog.text(assetManager.getMessages(Messages.FAILED_TO_CONNECT_DESCRIPTION));
                             dialog.button("OK");
                             dialog.show(getStage());
-                    }
+                        }
                     }
                 }
-           }
+            }
         }
     }
 

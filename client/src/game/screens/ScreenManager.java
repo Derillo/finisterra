@@ -1,33 +1,31 @@
 package game.screens;
 
-import com.badlogic.gdx.Screen;
 import game.AOGame;
 
+//@todo hacer las screens poolables (crear una sola vez y reutilizar)
+//@todo testear consumo de memoria
 public class ScreenManager {
-
-    private static ScreenManager instance;
-
     private AOGame game;
 
-    private ScreenManager() {
-    }
-
-    public static ScreenManager getInstance() {
-        if (instance == null) {
-            instance = new ScreenManager();
-        }
-        return instance;
-    }
-
-    public void initialize(AOGame game) {
+    public ScreenManager(AOGame game) {
         this.game = game;
     }
 
-    // Show in the game the screen which enum type is received
-    public void showScreen(ScreenEnum screenEnum, Object... params) {
-        // Show new screen
-        Screen newScreen = screenEnum.getScreen(params);
-        game.setScreen(newScreen);
+    public enum Screen {
+        LOADING,
+        LOGIN,
+        SIGNUP,
+        LOBBY,
+        ROOM,
+        GAME
     }
 
+    // Show in the game the screen which enum type is received
+    public void show(Screen screen, Object... params) {
+        // Show new screen
+        /*
+        Screen newScreen = screen.getScreen(game, params);
+        game.setScreen(newScreen);
+        */
+    }
 }

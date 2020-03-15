@@ -35,11 +35,18 @@ import static com.artemis.E.E;
 @Wire
 public class GameNotificationProcessor extends DefaultNotificationProcessor {
 
+    private AOGame game;
+
     private WorldManager worldManager;
     private AOAssetManager assetManager;
     private CameraShakeSystem cameraShakeSystem;
     private SoundsHandler soundsHandler;
     private GUI gui;
+
+    public GameNotificationProcessor(AOGame game) {
+        this.game = game;
+        assetManager = game.getAssetManager();
+    }
 
     @Override
     public void processNotification(EntityUpdate entityUpdate) {
@@ -55,9 +62,7 @@ public class GameNotificationProcessor extends DefaultNotificationProcessor {
         } else {
             Log.info("Network entity exists: " + entityUpdate.entityId + ". Updating");
             updateActions(entityUpdate.entityId, () -> updateEntity(entityUpdate));
-
         }
-        assetManager = AOGame.getGlobalAssetManager();
     }
 
     private void updateActions(int id, Runnable update) {
@@ -137,7 +142,6 @@ public class GameNotificationProcessor extends DefaultNotificationProcessor {
 
     @Override
     public void processNotification(JoinRoomNotification joinRoomNotification) {
-        AOGame game = (AOGame) Gdx.app.getApplicationListener();
         if (game.getScreen() instanceof RoomScreen) {
             RoomScreen room = (RoomScreen) game.getScreen();
             if (joinRoomNotification.isEnter()) {
@@ -152,7 +156,6 @@ public class GameNotificationProcessor extends DefaultNotificationProcessor {
 
     @Override
     public void processNotification(NewRoomNotification newRoomNotification) {
-        AOGame game = (AOGame) Gdx.app.getApplicationListener();
         if (game.getScreen() instanceof LobbyScreen) {
             final LobbyScreen lobby = (LobbyScreen) game.getScreen();
             lobby.roomCreated(newRoomNotification.getRoom());
@@ -195,7 +198,6 @@ public class GameNotificationProcessor extends DefaultNotificationProcessor {
 
     @Override
     public void processNotification(ChangePlayerNotification changePlayerNotification) {
-        AOGame game = (AOGame) Gdx.app.getApplicationListener();
         if (game.getScreen() instanceof RoomScreen) {
             Player player = changePlayerNotification.getPlayer();
             RoomScreen room = (RoomScreen) game.getScreen();
