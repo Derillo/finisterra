@@ -49,7 +49,7 @@ public class LoginScreen extends AbstractScreen {
     }
 
     @Override
-    void createContent() {
+    void createUI() {
         /* Tabla de login */
         Window loginWindow = new Window("", getSkin()); //@todo window es una ventana arrastrable
         Label emailLabel = new Label("Email:", getSkin());

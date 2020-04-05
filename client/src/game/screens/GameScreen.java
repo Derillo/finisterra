@@ -61,6 +61,7 @@ public class GameScreen extends ScreenAdapter implements WorldScreen {
     public static World world;
     public static int player = -1;
 
+    private final AOGame game;
     private final ClientConfiguration clientConfiguration;
     private final FPSLogger logger;
     private final Label fpsLabel;
@@ -71,6 +72,7 @@ public class GameScreen extends ScreenAdapter implements WorldScreen {
     private WorldConfigurationBuilder worldConfigBuilder;
 
     public GameScreen(AOGame game) {
+        this.game = game;
         this.clientConfiguration = game.getClientConfiguration();
         this.assetManager = game.getAssetManager();
         this.spriteBatch = initBatch();
@@ -173,8 +175,8 @@ public class GameScreen extends ScreenAdapter implements WorldScreen {
 
     public void initWorld(ClientSystem clientSystem) {
         worldConfigBuilder
-                .with(HIGH + 1, new ClientResponseProcessor())
-                .with(HIGH + 1, new GameNotificationProcessor())
+                .with(HIGH + 1, new ClientResponseProcessor(game))
+                .with(HIGH + 1, new GameNotificationProcessor(game))
                 .with(HIGH + 1, clientSystem);
         world = new World(worldConfigBuilder.build()); // preload Artemis world
     }

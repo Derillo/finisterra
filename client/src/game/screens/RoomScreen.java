@@ -50,7 +50,7 @@ public class RoomScreen extends AbstractScreen {
     }
 
     @Override
-    void createContent() {
+    void createUI() {
         // Load translations.
         Window table = new Window("", getSkin());
         table.setColor(1, 1, 1, 0.8f);

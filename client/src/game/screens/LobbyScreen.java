@@ -50,7 +50,7 @@ public class LobbyScreen extends AbstractScreen {
     }
 
     @Override
-    void createContent() {
+    void createUI() {
         roomList = new List<>(getSkin());
 
         Table container = new Table(getSkin());

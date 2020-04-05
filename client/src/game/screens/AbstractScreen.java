@@ -22,13 +22,13 @@ public abstract class AbstractScreen extends ScreenAdapter {
     private static final Texture BACKGROUND_TEXTURE = new Texture(Gdx.files.internal(Resources.GAME_IMAGES_PATH + "background.jpg"));
     private static final SpriteDrawable BACKGROUND = new SpriteDrawable(new Sprite(BACKGROUND_TEXTURE));
 
-    //dependencies
+    // dependencies
     protected final AOGame game;
     protected final AOAssetManager assetManager;
     protected final ClientConfiguration config;
     protected final ClientSystem clientSystem;
 
-    //scene2d ui
+    // scene2d ui
     protected final Stage stage;
     protected final Table mainTable;
 
@@ -49,16 +49,10 @@ public abstract class AbstractScreen extends ScreenAdapter {
         mainTable.setFillParent(true);
         mainTable.setBackground(BACKGROUND);
         stage.addActor(mainTable);
-
         createUI();
     }
 
-    private void createUI() {
-        createContent();
-        //getStage().addActor(getMainTable());
-    }
-
-    abstract void createContent();
+    abstract void createUI();
 
     protected void keyPressed(int keyCode) {
         //override me

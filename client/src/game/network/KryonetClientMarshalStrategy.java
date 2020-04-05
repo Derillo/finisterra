@@ -24,19 +24,13 @@ public class KryonetClientMarshalStrategy extends KryonetMarshalStrategy {
     }
 
     public void setHost(String host) {
-        if (state == MarshalState.STOPPED) {
-            this.host = host;
-        } else {
-            throw new IllegalStateException();
-        }
+        if (state != MarshalState.STOPPED) throw new IllegalStateException();
+        this.host = host;
     }
 
     public void setPort(int port) {
-        if (state == MarshalState.STOPPED) {
-            this.port = port;
-        } else {
-            throw new IllegalStateException();
-        }
+        if (state != MarshalState.STOPPED) throw new IllegalStateException();
+        this.port = port;
     }
 
     @Override
@@ -58,9 +52,9 @@ public class KryonetClientMarshalStrategy extends KryonetMarshalStrategy {
     public void start() {
         state = MarshalState.STARTING;
         registerDictionary();
-        endpoint.addListener(listener); // can be safely called more than once.
+        endpoint.addListener(listener); // can be safely called more than once
         endpoint.start();
-        connectEndpoint(); // Let it block! Let it block! Let it block! ♫
+        connectEndpoint(); // blocking
     }
 
     @Override

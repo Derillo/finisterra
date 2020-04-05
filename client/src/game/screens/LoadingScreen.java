@@ -24,7 +24,7 @@ public class LoadingScreen extends AbstractScreen {
     }
 
     @Override
-    void createContent() {
+    void createUI() {
         String progressBarPath = Resources.GAME_IMAGES_PATH + "progress-bar.png";
         String progressBarKnobPath = Resources.GAME_IMAGES_PATH + "progress-bar-knob.png";
         assetManager.getAssetManager().load(progressBarPath, Texture.class);
