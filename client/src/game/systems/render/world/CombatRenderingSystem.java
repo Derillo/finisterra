@@ -4,7 +4,6 @@ import com.artemis.Aspect;
 import com.artemis.E;
 import com.artemis.annotations.Wire;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -14,16 +13,16 @@ import com.esotericsoftware.minlog.Log;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import entity.character.parts.Body;
-import entity.world.CombatMessage;
-import game.handlers.DescriptorHandler;
+import component.entity.character.parts.Body;
+import component.entity.world.CombatMessage;
+import game.systems.resources.DescriptorsSystem;
+import game.systems.render.BatchRenderingSystem;
 import game.utils.Colors;
+import game.utils.Pos2D;
 import game.utils.Skins;
 import org.jetbrains.annotations.NotNull;
-import position.Pos2D;
-import position.WorldPos;
+import component.position.WorldPos;
 import shared.model.map.Tile;
-import shared.util.Util;
 
 import java.util.concurrent.TimeUnit;
 
@@ -31,7 +30,8 @@ import java.util.concurrent.TimeUnit;
 public class CombatRenderingSystem extends RenderingSystem {
 
     public static final float VELOCITY = 1f;
-    private DescriptorHandler descriptorHandler;
+    private DescriptorsSystem descriptorsSystem;
+    private BatchRenderingSystem batchRenderingSystem;
     private LoadingCache<CombatMessage, Table> messages = CacheBuilder
             .newBuilder()
             .expireAfterAccess(5, TimeUnit.MINUTES)
@@ -48,20 +48,20 @@ public class CombatRenderingSystem extends RenderingSystem {
                     float prefWidth = label.getPrefWidth();
                     label.setWrap(true);
                     label.setAlignment(Align.center);
-                    Log.info("Width: " + prefWidth);
+                    Log.debug("Width: " + prefWidth);
                     table.add(label).width(Math.min(prefWidth + 10, 200));
                     return table;
                 }
 
             });
 
-    public CombatRenderingSystem(Batch batch) {
-        super(Aspect.all(CombatMessage.class, Body.class, WorldPos.class), batch, CameraKind.WORLD);
+    public CombatRenderingSystem() {
+        super(Aspect.all(CombatMessage.class, Body.class, WorldPos.class));
     }
 
     @Override
     protected void process(E player) {
-        Pos2D playerPos = Util.toScreen(player.worldPosPos2D());
+        Pos2D playerPos = Pos2D.get(player).toScreen();
 
         if (!player.hasCombatMessage()) {
             return;
@@ -87,11 +87,11 @@ public class CombatRenderingSystem extends RenderingSystem {
             }
             float width = label.getWidth();
             final float fontX = playerPos.x + (Tile.TILE_PIXEL_WIDTH - width) / 2;
-            int bodyOffset = descriptorHandler.getBody(player.getBody().index).getHeadOffsetY();
+            int bodyOffset = descriptorsSystem.getBody(player.getBody().index).getHeadOffsetY();
             final float fontY = playerPos.y + combatMessage.offset + bodyOffset - 60 * SCALE
                     + label.getHeight();
             label.setPosition(fontX, fontY);
-            label.draw(getBatch(), 1);
+            batchRenderingSystem.addTask((batch -> label.draw(batch, 1)));
         } else {
             messages.invalidate(player.getCombatMessage());
             player.removeCombatMessage();

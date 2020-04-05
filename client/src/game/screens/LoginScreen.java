@@ -7,7 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Timer;
 import game.AOGame;
 import game.ClientConfiguration;
-import game.handlers.MusicHandler;
+import game.handlers.AOAssetManager;
+import game.systems.resources.MusicSystem;
+import game.systems.network.ClientResponseProcessor;
+import game.systems.network.GameNotificationProcessor;
 import game.systems.network.ClientSystem;
 import net.mostlyoriginal.api.network.marshal.common.MarshalState;
 import shared.network.account.AccountLoginRequest;
@@ -29,8 +32,8 @@ public class LoginScreen extends AbstractScreen {
         bGMusic();
     }
 
-    void bGMusic() { // TODO MusicHandler.playMusic(101);
-        Music firstBGMusic = MusicHandler.FIRSTBGM;
+    void bGMusic() {
+        Music firstBGMusic = MusicSystem.FIRSTBGM;
         firstBGMusic.setVolume(0);
         firstBGMusic.play();
         firstBGMusic.setLooping(true);

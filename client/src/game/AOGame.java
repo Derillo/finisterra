@@ -1,33 +1,27 @@
 package game;
 
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Interpolation;
 import com.esotericsoftware.minlog.Log;
 import game.handlers.AOAssetManager;
 import game.handlers.DefaultAOAssetManager;
-import game.screens.ScreenManager;
 import game.screens.GameScreen;
+import game.screens.ScreenManager;
 import game.screens.ScreenManager.*;
-import game.screens.transitions.ColorFadeTransition;
-import game.screens.transitions.FadingGame;
 import game.systems.network.ClientSystem;
-import game.utils.Cursors;
 import shared.util.LogSystem;
 
 /**
- * Represents the game application.
- * Implements {@link ApplicationListener}.
- * <p>
- * This should be the primary instance of the app.
- * </p>
+ * This is the <b>main class</b> for the game application (cross-platform).
+ * See libGDX {@link ApplicationListener}.
  */
-public class AOGame extends FadingGame implements AssetManagerHolder {
+public class AOGame extends Game implements AssetManagerHolder {
     public static final float GAME_SCREEN_ZOOM = 1f;
     public static final float GAME_SCREEN_MAX_ZOOM = 1.3f;
 
     private final ClientConfiguration clientConfiguration;
+    private Sync fpsSync;
 
     private final AOAssetManager assetManager;
     private final ClientSystem clientSystem;
@@ -48,13 +42,10 @@ public class AOGame extends FadingGame implements AssetManagerHolder {
 
     @Override
     public void create() {
-        super.create();
         Log.setLogger(new LogSystem());
-        Log.info("AOGame", "Creating AOGame...");
-        setTransition(new ColorFadeTransition(Color.BLACK, Interpolation.exp10), 1.0f);
-        Cursors.setCursor("hand");
+        Log.debug("AOGame", "Creating AOGame...");
         toLoading();
-        // @todo load platform-independent configuration (network, etc.)
+        this.fpsSync = new Sync();
     }
 
     private void toLoading() {
@@ -78,7 +69,6 @@ public class AOGame extends FadingGame implements AssetManagerHolder {
     }
 
     public void toGame() {
-        setTransition(new ColorFadeTransition(Color.BLACK, Interpolation.exp10), 0f);
         setScreen(new GameScreen(this));
     }
 
@@ -96,14 +86,20 @@ public class AOGame extends FadingGame implements AssetManagerHolder {
     }
 
     @Override
+    public void render() {
+//        fpsSync.sync(100);
+        super.render();
+    }
+
+    @Override
     public void dispose() {
-        Log.info("AOGame", "Closing client...");
-        //screenManager.dispose();
+        Log.debug("AOGame", "Closing client...");
         screen.dispose();
-        //client.dispose();
+        //screenManager.dispose();
+        clientSystem.stop();
         assetManager.dispose();
-        //Gdx.app.exit();
-        Log.info("Thank you for playing! See you soon...");
+        Log.debug("Thank you for playing! See you soon...");
+        //@todo disponer de todos los recursos utilizados, la JVM debería cerrar sola
         //System.exit(0);
     }
 }
